@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        MinWidth="400" MinHeight="550"
+        Width="400" Height="600"
+        x:Class="Pokemon.SinglePokemonWindow"
+        Title="SinglePokemonWindow">
+        <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Top"></StackPanel>
+                <StackPanel>
+                        <Image Name="Image" Width="200"/>
+                        <TextBlock Name="PokemonId" />
+                        <TextBlock Name="PokemonTitle" />
+                        <TextBlock Name="PokemonName" />
+                        <TextBlock Name="PokemonType" />
+                        <TextBlock Name="PokemonHeight" />
+                        <TextBlock Name="PokemonWeight" />
+                        <TextBlock Name="PokemonXpGroup" />
+                        <TextBlock Name="PokemonAbilities" />
+                        <TextBlock Name="PokemonBreedPeriod" />
+                        <TextBlock Name="PokemonSexRatio" />
+                        <TextBlock Name="PokemonTotalAmount" />
+                        <TextBlock Name="PokemonShine" />
+                        <TextBlock Name="PokemonRarity" />
+                        <TextBlock Name="PokemonHealth" />
+                        <TextBlock Name="PokemonAttack" />
+                        <TextBlock Name="PokemonDefence" />
+                        <TextBlock Name="PokemonSpeed" />
+                        <TextBlock Name="PokemonSpecialAttack" />
+                        <TextBlock Name="PokemonSpecialDefence" />
+                        <TextBlock Name="PokemonSumm"/>
+
+                </StackPanel>
+        </DockPanel>
+</Window>

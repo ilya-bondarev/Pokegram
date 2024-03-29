@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:entities="clr-namespace:Pokemon.Models.Entities"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Pokemon.ProfileWindow"
+        Title="ProfileWindow">
+    <StackPanel>
+        <Button Click="ToPokemonList">К покемонам</Button>
+        <StackPanel>
+            <Image Name="PokemonImage" Width="200"/>
+            <StackPanel>
+                <TextBlock Name="UserName"/>
+                <TextBlock Name="UserPokemon"></TextBlock>
+                <Button Click="PokemonBtn">Подробнее</Button>
+            </StackPanel>
+            <TextBlock>Ваша активность:</TextBlock>
+        </StackPanel>
+        <ListBox Name="UserActivityListBox">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel x:DataType="entities:UserActivity" Orientation="Horizontal">
+                        <TextBlock Text="{Binding Activity}"/>
+                        <TextBlock> в </TextBlock>
+                        <TextBlock Text="{Binding Timestamp}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </StackPanel>
+</Window>

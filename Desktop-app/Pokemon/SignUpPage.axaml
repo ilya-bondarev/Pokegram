@@ -1,0 +1,34 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Pokemon.SignUpPage"
+        Title="SignUpPage">
+        <StackPanel Name="PokeTest">
+                <TextBlock>Прежде чем зарегестрироваться пройди тест какой ты покемон :)</TextBlock>
+                <TextBlock>Таковы правила.</TextBlock>
+        
+                <TextBlock Text="1. Как вы заводите друзей?" FontWeight="Bold"/>
+                <RadioButton x:Name="AFirst" GroupName="Question1" Content="Ищу в интернете" Tag="1"/>
+                <RadioButton x:Name="ASecond" GroupName="Question1" Content="Иду в кофейню/бар" Tag="2"/>
+                <RadioButton x:Name="AThird" GroupName="Question1" Content="У меня нет друзей" Tag="3"/>
+
+                <TextBlock Text="2. Как вы обычно проводите свой свободное время?" FontWeight="Bold"/>
+                <RadioButton x:Name="BFirst" GroupName="Question2" Content="Читаю книги или смотрю фильмы дома" Tag="1"/>
+                <RadioButton x:Name="BSecond" GroupName="Question2" Content="Встречаюсь с друзьями или хожу на мероприятия" Tag="2"/>
+                <RadioButton x:Name="BThird" GroupName="Question2" Content="Занимаюсь спортом или активным отдыхом на природе" Tag="3"/>
+
+                <TextBlock Text="3. Как вы реагируете на стрессовые ситуации?" FontWeight="Bold"/>
+                <RadioButton x:Name="CFirst" GroupName="Question3" Content="Старайтесь избегать конфликтов и стрессов" Tag="1"/>
+                <RadioButton x:Name="CSecond" GroupName="Question3" Content="Анализируете ситуацию и ищете рациональное решение" Tag="2"/>
+                <RadioButton x:Name="CThird" GroupName="Question3" Content="Берётесь за решение проблемы независимо от стресса" Tag="3"/>
+
+                
+                <TextBlock Margin="0 30 0 0">Теперь сама регистрация</TextBlock>
+                <TextBox Watermark="Логин" Name="LoginTextBox"></TextBox>
+                <TextBox Watermark="Пароль" PasswordChar="*" Name="PasswordTextBox"></TextBox>
+                <Button Margin="10" Click="SignUp_Click">Зарегистрироваться</Button>
+                <TextBlock Name="Attention"></TextBlock>
+        </StackPanel>
+</Window>
