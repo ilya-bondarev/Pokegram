@@ -8,7 +8,7 @@ namespace Pokemon.Models;
 public class ApiClientBase
 {
     protected readonly HttpClient HttpClient;
-    protected readonly string BaseUrl = "http://127.0.0.1:5000";
+    protected readonly string BaseUrl = "http://77.222.37.106:5000";
 
     public ApiClientBase(HttpClient httpClient)
     {
