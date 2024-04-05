@@ -114,7 +114,7 @@ def check_user_password():
     if user_id:
         return jsonify(user_id), 200
     else:
-        return jsonify(None), 401
+        return jsonify(None), 200
 
 
 # Pockemon Rating logic
