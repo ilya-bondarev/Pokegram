@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using Avalonia;
 using Avalonia.Controls;
@@ -5,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Pokemon.Models.ApiClients;
+using Pokemon.Models.Entities;
 
 namespace Pokemon;
 
@@ -52,6 +54,16 @@ public partial class AdminPanelWindow : Window
         var client = new UserApiClient(new HttpClient());
         await client.DeleteUserAsync(userId);
         Upload();
+        
+        
+        var httpClient = new HttpClient();
+        var userActivityApiClient = new UserActivityApiClient(httpClient);
+        var newActivity = new UserActivity
+        {
+            UserId = (int)StaticData.UserId,
+            Activity = "Admin #" + (int)StaticData.UserId + " just deleted user #" + userId,
+            Timestamp = DateTime.Now
+        };
     }
 
     private void InputElement_OnDoubleTapped(object? sender, TappedEventArgs e)

@@ -111,7 +111,7 @@ public partial class SignUpPage : Window
                     var newActivity = new UserActivity
                     {
                         UserId = (int)id,
-                        Activity = "User " + id + " just registrated!",
+                        Activity = "User #" + id + " just registred",
                         Timestamp = DateTime.Now
                     };
                     await userActivityApiClient.AddUserActivityAsync(newActivity);
