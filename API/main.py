@@ -71,6 +71,7 @@ def get_all_users():
         })
     return jsonify(users),200
 
+@app.route('/user/add', methods=['POST'])
 def add_user():
     data = request.json
     if not all([data.get('user_name'), data.get('user_totem_pokemon'), data.get('user_password'), data.get('user_role')]):
