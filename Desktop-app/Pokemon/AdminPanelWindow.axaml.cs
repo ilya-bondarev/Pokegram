@@ -45,7 +45,9 @@ public partial class AdminPanelWindow : Window
     private async void UserDeleteBtn_OnClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;
+        if ((int)button.Tag == 8 || (int)button.Tag == 2) return; //Protect from deleting Admin and Guest users
         var userId = (int)button.Tag;
+
         
         var client = new UserApiClient(new HttpClient());
         await client.DeleteUserAsync(userId);
