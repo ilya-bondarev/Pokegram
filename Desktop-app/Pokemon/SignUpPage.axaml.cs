@@ -63,6 +63,11 @@ public partial class SignUpPage : Window
     }
     private async void SignUp_Click(object? sender, RoutedEventArgs e)
     {
+        if (LoginTextBox.Text.Length > 20 || !System.Text.RegularExpressions.Regex.IsMatch(LoginTextBox.Text, @"^[a-zA-Z0-9-_а-яА-Я]+$"))
+        {
+            Attention.Text = "Логин должен быть не более 20 символов и содержать только буквы, цифры и символы -_";
+            return; 
+        }
         int a = 0, b = 0, c = 0;
             // Вопрос 1
             if (AFirst.IsChecked == true) a = 1;
