@@ -1,10 +1,8 @@
 using System;
 using System.Net.Http;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Pokemon.Models.ApiClients;
 using Pokemon.Models.Entities;
 
@@ -35,7 +33,6 @@ public partial class AdminPanelWindow : Window
         window.Show();
         this.Close();
     }
-
     private void UserPokemonBtn_OnClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;
@@ -45,7 +42,6 @@ public partial class AdminPanelWindow : Window
         var window = new SinglePokemonWindow();
         window.Show();
     }
-
     private async void UserDeleteBtn_OnClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;
@@ -55,7 +51,6 @@ public partial class AdminPanelWindow : Window
         await client.DeleteUserAsync(userId);
         Upload();
         
-        
         var httpClient = new HttpClient();
         var userActivityApiClient = new UserActivityApiClient(httpClient);
         var newActivity = new UserActivity
@@ -64,8 +59,8 @@ public partial class AdminPanelWindow : Window
             Activity = "Admin #" + (int)StaticData.UserId + " just deleted user #" + userId,
             Timestamp = DateTime.Now
         };
+        await userActivityApiClient.AddUserActivityAsync(newActivity);
     }
-
     private void InputElement_OnDoubleTapped(object? sender, TappedEventArgs e)
     {
         if (sender is not StackPanel userList) return;

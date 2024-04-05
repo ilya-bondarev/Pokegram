@@ -6,38 +6,52 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Pokemon.AdminPanelWindow"
         Title="AdminPanelWindow">
-    <StackPanel Orientation="Vertical">
-        <StackPanel>
+    <DockPanel LastChildFill="True">
+        <StackPanel DockPanel.Dock="Top">
             <Button Click="PokemonBtn">Обратно к покемонам</Button>
         </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <ListBox Name="UserListBox">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel x:DataType="entities:User" Orientation="Horizontal" DoubleTapped="InputElement_OnDoubleTapped" Tag="{Binding UserId}">
-                                    <TextBlock Text="Id: "/>
-                                    <TextBlock Text="{Binding UserId}"/>
-                                    <TextBlock Text=", Name:"/>
-                                    <TextBlock Text="{Binding UserName}"/>
-                                    <Button Tag="{Binding UserTotemPokemon}" Click="UserPokemonBtn_OnClick">Тотемный покемон</Button>
-                                    <Button Tag="{Binding UserId}" Click="UserDeleteBtn_OnClick">Удалить</Button>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-            
-            <ListBox Name="UserActivityListBox">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <ListBox Name="UserListBox" Grid.Column="0">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel x:DataType="entities:UserActivity" Orientation="Horizontal">
-                            <TextBlock Text="{Binding Activity}"/>
-                            <TextBlock> в </TextBlock>
-                            <TextBlock Text="{Binding Timestamp}"/>
+                        <StackPanel x:DataType="entities:User" Orientation="Vertical"
+                                    DoubleTapped="InputElement_OnDoubleTapped" Tag="{Binding UserId}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Id: " />
+                                <TextBlock Text="{Binding UserId}" />
+                                <TextBlock Text=", Name:" />
+                                <TextBlock Text="{Binding UserName}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Tag="{Binding UserTotemPokemon}" Click="UserPokemonBtn_OnClick">Тотемный покемон</Button>
+                                <Button Tag="{Binding UserId}" Click="UserDeleteBtn_OnClick">Удалить</Button>
+                            </StackPanel>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-        </StackPanel>
-        
-    </StackPanel>
+            <ListBox Name="UserActivityListBox" Grid.Column="1">
+                <ListBox.Template>
+                    <ControlTemplate>
+                        <ScrollViewer>
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ListBox.Template>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel x:DataType="entities:UserActivity" Orientation="Horizontal">
+                            <TextBlock Text="{Binding Activity}" />
+                            <TextBlock Margin="5 0">в</TextBlock>
+                            <TextBlock Text="{Binding Timestamp}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </DockPanel>
 </Window>
