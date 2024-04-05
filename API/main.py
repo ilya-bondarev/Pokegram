@@ -71,13 +71,15 @@ def get_all_users():
         })
     return jsonify(users),200
 
-@app.route('/user/add', methods=['POST'])
 def add_user():
     data = request.json
-    if not all([data['user_name'], data['user_totem_pokemon'], data['user_password'], data['user_role']]):
+    if not all([data.get('user_name'), data.get('user_totem_pokemon'), data.get('user_password'), data.get('user_role')]):
         return jsonify({"error": "Missing data"}), 400
-    
-    poke_user.add_user(data['user_name'], data['user_totem_pokemon'], data['user_password'], data['user_role'])
+
+    user_added = poke_user.add_user(data['user_name'], data['user_totem_pokemon'], data['user_password'], data['user_role'])
+    if not user_added:
+        return jsonify({"error": "User with this username already exists"}), 400
+
     return jsonify({"message": "User added successfully"}), 201
 
 @app.route('/user/<int:user_id>', methods=['GET'])

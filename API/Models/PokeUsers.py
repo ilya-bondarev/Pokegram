@@ -10,7 +10,15 @@ class PokeUser:
     def __init__(self, db_connection):
         self.db = db_connection
 
+    def user_exists(self, user_name):
+        query = "SELECT * FROM poke_users WHERE user_name = %s;"
+        self.db.cursor.execute(query, (user_name,))
+        return self.db.cursor.fetchone() is not None
+
     def add_user(self, user_name, user_totem_pokemon, user_password, user_role):
+        if self.user_exists(user_name):
+            return False # User already exists
+
         hashed_password = bcrypt.hashpw(user_password.encode('utf-8'), bcrypt.gensalt()).decode('utf8')
 
         insert_query = """
@@ -18,6 +26,7 @@ class PokeUser:
         VALUES (%s, %s, %s, %s);
         """
         self.db.cursor.execute(insert_query, (user_name, user_totem_pokemon, hashed_password, user_role))
+        return True # User added successfully
 
     def get_user(self, user_id):
         select_query = "SELECT * FROM poke_users WHERE user_id = %s;"
