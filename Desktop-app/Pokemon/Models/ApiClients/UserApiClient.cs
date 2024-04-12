@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -37,7 +38,7 @@ public class UserApiClient : ApiClientBase
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await HttpClient.PostAsync($"{BaseUrl}/user/add", content);
-        if (!response.IsSuccessStatusCode) { }
+        if (!response.IsSuccessStatusCode) { throw new Exception("User already exist or missing data");}
     }
 
     public async Task DeleteUserAsync(int userId)
