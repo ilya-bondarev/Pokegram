@@ -13,6 +13,7 @@ bcrypt = Bcrypt(app)
 
 #user
 class User(db.Model):
+    __tablename__ = 'poke_users'
     user_id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(80), unique=True, nullable=False)
     user_totem_pokemon = db.Column(db.String(80), nullable=False)
@@ -104,6 +105,7 @@ def check_user_password():
 
 #user_activity
 class UserActivity(db.Model):
+    __tablename__ = 'user_activities'
     activity_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     activity = db.Column(db.String(255), nullable=False)
@@ -150,6 +152,7 @@ def get_activities_by_user(user_id):
 
 #user_role
 class Role(db.Model):
+    __tablename__ = 'roles'
     role_id = db.Column(db.Integer, primary_key=True)
     role_title = db.Column(db.String(100), unique=True, nullable=False)
 
@@ -181,6 +184,7 @@ def get_role(role_id):
 
 #pokemon
 class Pokemon(db.Model):
+    __tablename__ = 'pokemons'
     pokemon_id = db.Column(db.Integer, primary_key=True)
     pokemon_number = db.Column(db.Integer, nullable=False)
     pokemon_xp_group = db.Column(db.Integer, db.ForeignKey('xp_groups.group_id'))
