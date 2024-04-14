@@ -192,17 +192,26 @@ class Pokemon(db.Model):
     pokemon_name = db.Column(db.String, nullable=False)
     pokemon_abilities = db.Column(db.Text)
 
-    physical = db.relationship('PokemonPhysical', backref='pokemon', uselist=False)
-    breeding = db.relationship('PokemonBreeding', backref='pokemon', uselist=False)
-    stats = db.relationship('PokemonStats', backref='pokemon', uselist=False)
+    physical = db.relationship('PokemonPhysical', back_populates='pokemon', uselist=False)
+    breeding = db.relationship('PokemonBreeding', back_populates='pokemon', uselist=False)
+    stats = db.relationship('PokemonStats', back_populates='pokemon', uselist=False)
+
+class PokemonPhysical(db.Model):
+    pokemon_id = db.Column(db.Integer, db.ForeignKey('pokemon.pokemon_id'), primary_key=True)
+    height = db.Column(db.Float)
+    weight = db.Column(db.Float)
+
+    pokemon = db.relationship('Pokemon', back_populates='physical')
 
 class PokemonBreeding(db.Model):
-    pokemon_id = db.Column(db.Integer, db.ForeignKey('pokemons.pokemon_id'), primary_key=True)
+    pokemon_id = db.Column(db.Integer, db.ForeignKey('pokemon.pokemon_id'), primary_key=True)
     breed_period = db.Column(db.Integer)
     sex_ratio = db.Column(db.String)
 
+    pokemon = db.relationship('Pokemon', back_populates='breeding')
+
 class PokemonStats(db.Model):
-    pokemon_id = db.Column(db.Integer, db.ForeignKey('pokemons.pokemon_id'), primary_key=True)
+    pokemon_id = db.Column(db.Integer, db.ForeignKey('pokemon.pokemon_id'), primary_key=True)
     health = db.Column(db.Integer)
     attack = db.Column(db.Integer)
     defence = db.Column(db.Integer)
@@ -211,14 +220,12 @@ class PokemonStats(db.Model):
     special_defence = db.Column(db.Integer)
     summ = db.Column(db.Integer)
 
-class PokemonPhysical(db.Model):
-    pokemon_id = db.Column(db.Integer, db.ForeignKey('pokemons.pokemon_id'), primary_key=True)
-    height = db.Column(db.Float)
-    weight = db.Column(db.Float)
+    pokemon = db.relationship('Pokemon', back_populates='stats')
 
 class XpGroups(db.Model):
     group_id = db.Column(db.Integer, primary_key=True)
     group_title = db.Column(db.String, nullable=False)
+
 
 @app.route('/pokemon/add', methods=['POST'])
 def add_pokemon():
