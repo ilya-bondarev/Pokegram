@@ -179,7 +179,7 @@ def get_role(role_id):
         return jsonify({'error': 'Role not found'}), 404
 
 
-#pokemon..
+#pokemon
 class Pokemon(db.Model):
     pokemon_id = db.Column(db.Integer, primary_key=True)
     pokemon_number = db.Column(db.Integer, nullable=False)
@@ -190,7 +190,7 @@ class Pokemon(db.Model):
     pokemon_title = db.Column(db.String, nullable=False)
     pokemon_photo = db.Column(db.Text)
     pokemon_name = db.Column(db.String, nullable=False)
-    pokemon_abilities = db.Column(db.Text)  # Assume simple text for demo, should be relation to abilities table
+    pokemon_abilities = db.Column(db.Text)
 
     physical = db.relationship('PokemonPhysical', backref='pokemon', uselist=False)
     breeding = db.relationship('PokemonBreeding', backref='pokemon', uselist=False)
@@ -223,7 +223,6 @@ class XpGroups(db.Model):
 @app.route('/pokemon/add', methods=['POST'])
 def add_pokemon():
     data = request.json
-    # Create instances for all tables related to a Pokemon
     new_pokemon = Pokemon(
         pokemon_number=data['pokemon_number'],
         pokemon_xp_group=data['pokemon_xp_group'],
@@ -274,7 +273,7 @@ def get_pokemon(pokemon_id):
             'pokemon_photo': pokemon.pokemon_photo,
             'pokemon_name': pokemon.pokemon_name,
             'pokemon_number': pokemon.pokemon_number,
-            'pokemon_type': pokemon.pokemon_abilities,  # Assuming simple for demo
+            'pokemon_type': pokemon.pokemon_abilities,
             'pokemon_height': pokemon.physical.height if pokemon.physical else None,
             'pokemon_weight': pokemon.physical.weight if pokemon.physical else None,
             'pokemon_xp_group': pokemon.pokemon_xp_group,
@@ -355,3 +354,5 @@ def get_id_pokemon_of_month():
     hash_number = int(hash_result.hexdigest(), base=16)
     pokemon_id = hash_number % 1200  # Ensure this range aligns with your actual Pokemon ID range
     return jsonify({pokemon_id}), 200
+
+app.run(debug=True, host='0.0.0.0', port=5000)
