@@ -6,9 +6,8 @@ class Pokemon:
         self.db = db_connection
 
     def add_pokemon(self, pokemon_data):
-        with self.db.cursor as cursor:
             # Insert into pokemons table
-            cursor.execute("""
+        self.db.cursor.execute("""
                 INSERT INTO pokemons (
                     pokemon_number, pokemon_xp_group, pokemon_total_amount,
                     pokemon_shine, pokemon_rarity, pokemon_title, pokemon_photo,
@@ -21,16 +20,16 @@ class Pokemon:
                 pokemon_data['pokemon_photo'], pokemon_data['pokemon_name'],
                 pokemon_data['pokemon_abilities']
             ))
-            pokemon_id = cursor.fetchone()[0]
+        pokemon_id = self.db.cursor.fetchone()[0]
 
             # Insert into pokemon_breeding table
-            cursor.execute("""
+        self.db.cursor.execute("""
                 INSERT INTO pokemon_breeding (pokemon_id, breed_period, sex_ratio)
                 VALUES (%s, %s, %s);
             """, (pokemon_id, pokemon_data['breed_period'], pokemon_data['sex_ratio']))
 
             # Insert into pokemon_stats table
-            cursor.execute("""
+        self.db.cursor.execute("""
                 INSERT INTO pokemon_stats (
                     pokemon_id, health, attack, defence, speed,
                     special_attack, special_defence, summ
@@ -42,13 +41,10 @@ class Pokemon:
                 pokemon_data['summ']
             ))
 
-            # Assuming pokemon_type and xp_groups are managed elsewhere as they involve lookups
-
         self.db.commit()
 
     def get_pokemon(self, pokemon_id):
-        with self.db.cursor as cursor:
-            cursor.execute("""
+        self.db.cursor.execute("""
                 SELECT p.*, b.breed_period, b.sex_ratio, s.health, s.attack,
                     s.defence, s.speed, s.special_attack, s.special_defence, s.summ
                 FROM pokemons p
@@ -56,13 +52,12 @@ class Pokemon:
                 LEFT JOIN pokemon_stats s ON p.pokemon_id = s.pokemon_id
                 WHERE p.pokemon_id = %s;
             """, (pokemon_id,))
-            return cursor.fetchone()
+        return self.db.cursor.fetchone()
 
     
     def get_all_pokemons(self, page=1, pageSize=10):
         offset = (page - 1) * pageSize
-        with self.db.cursor as cursor:
-            cursor.execute("""
+        self.db.cursor.execute("""
                 SELECT p.*, b.breed_period, b.sex_ratio, s.health, s.attack,
                     s.defence, s.speed, s.special_attack, s.special_defence, s.summ
                 FROM pokemons p
@@ -70,7 +65,7 @@ class Pokemon:
                 LEFT JOIN pokemon_stats s ON p.pokemon_id = s.pokemon_id
                 LIMIT %s OFFSET %s;
             """, (pageSize, offset))
-            return cursor.fetchall()
+        return self.db.cursor.fetchall()
 
     
     def get_total_pokemons_count(self):
