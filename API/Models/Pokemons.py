@@ -50,7 +50,6 @@ SELECT
     p.pokemon_title,
     d.pokemon_photo,
     p.pokemon_name,
-    NULL AS pokemon_number,  -- Always NULL
     p.pokemon_type,
     d.pokemon_height,
     d.pokemon_weight,
