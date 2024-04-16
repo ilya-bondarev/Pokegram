@@ -11,13 +11,9 @@
                 <StackPanel DockPanel.Dock="Top"></StackPanel>
                 <StackPanel>
                         <Image Name="Image" Width="200"/>
-                        <TextBlock Name="PokemonId" />
-                        <TextBlock Name="PokemonTitle" />
                         <TextBlock Name="PokemonName" />
-                        <TextBlock Name="PokemonType" />
                         <TextBlock Name="PokemonHeight" />
                         <TextBlock Name="PokemonWeight" />
-                        <TextBlock Name="PokemonXpGroup" />
                         <TextBlock Name="PokemonAbilities" />
                         <TextBlock Name="PokemonBreedPeriod" />
                         <TextBlock Name="PokemonSexRatio" />
