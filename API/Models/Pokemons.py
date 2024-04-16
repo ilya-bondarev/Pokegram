@@ -50,7 +50,6 @@ class Pokemon:
                     p.pokemon_title,
                     d.pokemon_photo,
                     p.pokemon_name,
-                    NULL AS pokemon_number,
                     p.pokemon_type,
                     d.pokemon_height,
                     d.pokemon_weight,
@@ -99,7 +98,6 @@ class Pokemon:
                     p.pokemon_title,
                     d.pokemon_photo,
                     p.pokemon_name,
-                    NULL AS pokemon_number,
                     p.pokemon_type,
                     d.pokemon_height,
                     d.pokemon_weight,
@@ -136,9 +134,9 @@ class Pokemon:
                 ORDER BY 
                     p.pokemon_id
                 LIMIT 
-                    {pageSize}
+                    %s
                 OFFSET 
-                    {offset}; 
+                    %s; 
             """, (pageSize, offset))
         return self.db.cursor.fetchall()
 
