@@ -45,12 +45,48 @@ class Pokemon:
 
     def get_pokemon(self, pokemon_id):
         self.db.cursor.execute("""
-                SELECT p.*, b.breed_period, b.sex_ratio, s.health, s.attack,
-                    s.defence, s.speed, s.special_attack, s.special_defence, s.summ
-                FROM pokemons p
-                LEFT JOIN pokemon_breeding b ON p.pokemon_id = b.pokemon_id
-                LEFT JOIN pokemon_stats s ON p.pokemon_id = s.pokemon_id
-                WHERE p.pokemon_id = %s;
+                SELECT 
+                    p.pokemon_id,
+                    p.pokemon_title,
+                    d.pokemon_photo,
+                    p.pokemon_name,
+                    NULL AS pokemon_number,
+                    p.pokemon_type,
+                    d.pokemon_height,
+                    d.pokemon_weight,
+                    p.pokemon_xp_group,
+                    STRING_AGG(a.ability_name, '   ') AS pokemon_abilities,
+                    d.pokemon_breed_period,
+                    d.pokemon_sex_ratio,
+                    d.pokemon_total_amount,
+                    d.pokemon_shine,
+                    d.pokemon_rarity,
+                    s.pokemon_health,
+                    s.pokemon_attack,
+                    s.pokemon_defence,
+                    s.pokemon_speed,
+                    s.pokemon_special_attack,
+                    s.pokemon_special_defence,
+                    s.pokemon_total_sum
+                FROM 
+                    public.pokemons p
+                JOIN 
+                    public.pokemon_details d ON p.pokemon_id = d.pokemon_id
+                JOIN 
+                    public.pokemon_stats s ON p.pokemon_id = s.pokemon_id
+                LEFT JOIN 
+                    public.pokemon_abilities pa ON p.pokemon_id = pa.pokemon_id
+                LEFT JOIN 
+                    public.abilities a ON pa.ability_id = a.ability_id
+                WHERE 
+                    p.pokemon_id = %s  -- Replace %s with the actual pokemon_id when using this query
+                GROUP BY 
+                    p.pokemon_id, d.pokemon_photo, d.pokemon_height, d.pokemon_weight, d.pokemon_breed_period, 
+                    d.pokemon_sex_ratio, d.pokemon_total_amount, d.pokemon_shine, d.pokemon_rarity, 
+                    s.pokemon_health, s.pokemon_attack, s.pokemon_defence, s.pokemon_speed, 
+                    s.pokemon_special_attack, s.pokemon_special_defence, s.pokemon_total_sum,
+                    p.pokemon_title, p.pokemon_name, p.pokemon_type, p.pokemon_xp_group;
+
             """, (pokemon_id,))
         return self.db.cursor.fetchone()
 
@@ -58,12 +94,51 @@ class Pokemon:
     def get_all_pokemons(self, page=1, pageSize=10):
         offset = (page - 1) * pageSize
         self.db.cursor.execute("""
-                SELECT p.*, b.breed_period, b.sex_ratio, s.health, s.attack,
-                    s.defence, s.speed, s.special_attack, s.special_defence, s.summ
-                FROM pokemons p
-                LEFT JOIN pokemon_breeding b ON p.pokemon_id = b.pokemon_id
-                LEFT JOIN pokemon_stats s ON p.pokemon_id = s.pokemon_id
-                LIMIT %s OFFSET %s;
+                SELECT 
+                    p.pokemon_id,
+                    p.pokemon_title,
+                    d.pokemon_photo,
+                    p.pokemon_name,
+                    NULL AS pokemon_number,
+                    p.pokemon_type,
+                    d.pokemon_height,
+                    d.pokemon_weight,
+                    p.pokemon_xp_group,
+                    STRING_AGG(a.ability_name, '   ') AS pokemon_abilities,
+                    d.pokemon_breed_period,
+                    d.pokemon_sex_ratio,
+                    d.pokemon_total_amount,
+                    d.pokemon_shine,
+                    d.pokemon_rarity,
+                    s.pokemon_health,
+                    s.pokemon_attack,
+                    s.pokemon_defence,
+                    s.pokemon_speed,
+                    s.pokemon_special_attack,
+                    s.pokemon_special_defence,
+                    s.pokemon_total_sum
+                FROM 
+                    public.pokemons p
+                LEFT JOIN 
+                    public.pokemon_details d ON p.pokemon_id = d.pokemon_id
+                LEFT JOIN 
+                    public.pokemon_stats s ON p.pokemon_id = s.pokemon_id
+                LEFT JOIN 
+                    public.pokemon_abilities pa ON p.pokemon_id = pa.pokemon_id
+                LEFT JOIN 
+                    public.abilities a ON pa.ability_id = a.ability_id
+                GROUP BY 
+                    p.pokemon_id, d.pokemon_photo, d.pokemon_height, d.pokemon_weight, d.pokemon_breed_period, 
+                    d.pokemon_sex_ratio, d.pokemon_total_amount, d.pokemon_shine, d.pokemon_rarity, 
+                    s.pokemon_health, s.pokemon_attack, s.pokemon_defence, s.pokemon_speed, 
+                    s.pokemon_special_attack, s.pokemon_special_defence, s.pokemon_total_sum,
+                    p.pokemon_title, p.pokemon_name, p.pokemon_type, p.pokemon_xp_group
+                ORDER BY 
+                    p.pokemon_id
+                LIMIT 
+                    {pageSize}
+                OFFSET 
+                    {offset}; 
             """, (pageSize, offset))
         return self.db.cursor.fetchall()
 
