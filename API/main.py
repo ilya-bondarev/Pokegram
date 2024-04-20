@@ -1,356 +1,273 @@
 # Initialize App and import dependencies
 from flask import Flask, request, jsonify
 from datetime import datetime
+import bcrypt
+import hashlib
+
+# Initialize Database Connection and import all tables and data
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import Pokemon, PokemonDetail, PokemonStat, User, UserActivity
+from config import DB_NAME, DB_USER, DB_PASSWORD, DB_HOST
+
+# Connect to the database
+engine = create_engine(f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}")
+Session = sessionmaker(bind=engine)
+session = Session()
 app = Flask(__name__)
 
 
-# Initialize Database Connection and import all tables and data
-from Models import UserActivities, PokemonRatings, Pokemons, PokeUsers, Roles, XpGroups, PokemonTypes
-from Models.DatabaseConnection import DatabaseConnection
-from config import DB_NAME, DB_USER, DB_PASSWORD, DB_HOST
+# Pokemon logic
+@app.route('/pokemon/<int:pokemon_id>', methods=['GET'])
+def get_pokemon(pokemon_id):
+    pokemon = session.query(Pokemon).filter_by(pokemon_id=pokemon_id).one()
+    details = session.query(PokemonDetail).filter_by(pokemon_id=pokemon_id).one()
+    stats = session.query(PokemonStat).filter_by(pokemon_id=pokemon_id).one()
 
-db = DatabaseConnection(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST)
-user_activity = UserActivities.UserActivity(db)
-poke_user = PokeUsers.PokeUser(db)
-pokemon_rating = PokemonRatings.PokemonRating(db)
-pokemon_type = PokemonTypes.PokemonType(db)
-role = Roles.Role(db)
-xp_group = XpGroups.XPGroup(db)
-pokemon = Pokemons.Pokemon(db)
+    abilities = " ".join([ability.ability_name for ability in pokemon.abilities])
 
+    #TODO Make tables separated
+    pokemon_data = {
+        "pokemon_abilities": abilities,
+        "pokemon_attack": stats.pokemon_attack,
+        "pokemon_breed_period": details.pokemon_breed_period,
+        "pokemon_defence": stats.pokemon_defence,
+        "pokemon_health": stats.pokemon_health,
+        "pokemon_height": details.pokemon_height,
+        "pokemon_id": pokemon.pokemon_id,
+        "pokemon_name": pokemon.pokemon_name,
+        "pokemon_number": None, #TODO Remove this none
+        "pokemon_photo": details.pokemon_photo,
+        "pokemon_rarity": details.pokemon_rarity,
+        "pokemon_sex_ratio": details.pokemon_sex_ratio,
+        "pokemon_shine": details.pokemon_shine,
+        "pokemon_special_attack": stats.pokemon_special_attack,
+        "pokemon_special_defence": stats.pokemon_special_defence,
+        "pokemon_speed": stats.pokemon_speed,
+        "pokemon_summ": stats.pokemon_total_sum,
+        "pokemon_title": pokemon.pokemon_title,
+        "pokemon_total_amount": details.pokemon_total_amount,
+        "pokemon_type": pokemon.pokemon_type,
+        "pokemon_weight": details.pokemon_weight,
+        "pokemon_xp_group": pokemon.pokemon_xp_group
+    }
 
-# User Activities logic
-@app.route('/user_activity/add', methods=['POST'])
-def add_user_activity():
-    data = request.json
-    user_id = data.get('user_id')
-    activity = data.get('activity')
-    timestamp = data.get('timestamp')
+    return jsonify(pokemon_data)
+
+@app.route('/pokemon', methods=['GET'])
+def get_all_pokemons():
+    page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('pageSize', 10, type=int)
+
+    # Calculate offset for pagination
+    offset = (page - 1) * page_size
+
+    # Get total count of pokemons
+    total_pokemons = session.query(Pokemon).count()
+    total_pages = (total_pokemons + page_size - 1) // page_size
+
+    # Query for pokemons by page
+    pokemons_query = session.query(Pokemon).offset(offset).limit(page_size).all()
     
-    if not all([user_id, activity, timestamp]):
-        return jsonify({'error': 'Missing data'}), 400
-    
-    user_activity.add_activity(user_id, activity, timestamp)
-    return jsonify({'message': 'Activity added successfully'}), 201
+    pokemons_data = []
+    for pokemon in pokemons_query:
+        details = session.query(PokemonDetail).filter_by(pokemon_id=pokemon.pokemon_id).one_or_none()
+        stats = session.query(PokemonStat).filter_by(pokemon_id=pokemon.pokemon_id).one_or_none()
+        
+        if details and stats:
+            abilities = " ".join([ability.ability_name for ability in pokemon.abilities])
+            pokemon_info = {
+                "pokemon_abilities": abilities,
+                "pokemon_attack": stats.pokemon_attack,
+                "pokemon_breed_period": details.pokemon_breed_period,
+                "pokemon_defence": stats.pokemon_defence,
+                "pokemon_health": stats.pokemon_health,
+                "pokemon_height": details.pokemon_height,
+                "pokemon_id": pokemon.pokemon_id,
+                "pokemon_name": pokemon.pokemon_name,
+                "pokemon_number": None,
+                "pokemon_photo": details.pokemon_photo,
+                "pokemon_rarity": details.pokemon_rarity,
+                "pokemon_sex_ratio": details.pokemon_sex_ratio,
+                "pokemon_shine": details.pokemon_shine,
+                "pokemon_special_attack": stats.pokemon_special_attack,
+                "pokemon_special_defence": stats.pokemon_special_defence,
+                "pokemon_speed": stats.pokemon_speed,
+                "pokemon_summ": stats.pokemon_total_sum,
+                "pokemon_title": pokemon.pokemon_title,
+                "pokemon_total_amount": details.pokemon_total_amount,
+                "pokemon_type": pokemon.pokemon_type,
+                "pokemon_weight": details.pokemon_weight,
+                "pokemon_xp_group": pokemon.pokemon_xp_group
+            }
+            pokemons_data.append(pokemon_info)
 
-@app.route('/user_activity/<int:activity_id>', methods=['GET'])
-def get_user_activity(activity_id):
-    activity = user_activity.get_activity_by_id(activity_id)
-    if activity:
-        return jsonify({'activity': activity}), 200
+    result = {
+        "page": page,
+        "page_size": page_size,
+        "pokemons": pokemons_data,
+        "total_pages": total_pages,
+        "total_pokemons": total_pokemons
+    }
+
+    return jsonify(result)
+
+
+# User
+@app.route('/user/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    user = session.query(User).filter(User.user_id == user_id).first()
+    if user:
+        user_data = {
+            "user_id": user.user_id,
+            "user_name": user.user_name,
+            "user_password": user.user_password,
+            "user_role": user.user_role,
+            "user_totem_pokemon": user.user_totem_pokemon
+        }
+        return jsonify(user_data)
     else:
-        return jsonify({'error': 'Activity not found'}), 404
-
-@app.route('/user_activity/user/<int:user_id>', methods=['GET'])
-def get_activities_by_user(user_id):
-    activities = user_activity.get_activities_by_user(user_id)
-    answer = []
-    for activity in activities:
-        answer.append({
-            'activity_id': activity[0],
-            'user_id': activity[1],
-            'activity': activity[2],
-            'timestamp': activity[3]
-        })
-    return jsonify(answer), 200
+        return jsonify({"error": "User not found"})
 
 
-# Users logic
 @app.route('/user', methods=['GET'])
 def get_all_users():
-    user = poke_user.get_all_users()
+    users = session.query(User).all()
+    user_list = []
 
-    users = []
-    for data in user:
-        users.append({
-            'user_id': data[0],
-            'user_name': data[1],
-            'user_totem_pokemon': data[2],
-            'user_password': data[3],
-            'user_role': data[4]
-        })
-    return jsonify(users),200
+    for user in users:
+        user_data = {
+            "user_id": user.user_id,
+            "user_name": user.user_name,
+            "user_password": user.user_password,
+            "user_role": user.user_role,
+            "user_totem_pokemon": user.user_totem_pokemon
+        }
+        user_list.append(user_data)
+
+    return jsonify(user_list)
 
 @app.route('/user/add', methods=['POST'])
 def add_user():
     data = request.json
+    session = Session()
+
     if not all([data.get('user_name'), data.get('user_totem_pokemon'), data.get('user_password'), data.get('user_role')]):
         return jsonify({"error": "Missing data"}), 400
-
-    user_added = poke_user.add_user(data['user_name'], data['user_totem_pokemon'], data['user_password'], data['user_role'])
-    if not user_added:
+    user = session.query(User).filter_by(user_name=data['user_name']).first()
+    
+    if user:
         return jsonify({"error": "User with this username already exists"}), 400
 
+    hashed_password = bcrypt.hashpw(data['user_password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    new_user = User(
+        user_name=data['user_name'],
+        user_totem_pokemon=data['user_totem_pokemon'],
+        user_password=hashed_password,
+        user_role=data['user_role']
+    )
+    session.add(new_user)
+    session.commit()
     return jsonify({"message": "User added successfully"}), 201
-
-@app.route('/user/<int:user_id>', methods=['GET'])
-def get_user(user_id):
-    user_data = poke_user.get_user(user_id)
-    return jsonify(({
-        'user_id': user_data[0],
-        'user_name': user_data[1],
-        'user_totem_pokemon': user_data[2],
-        'user_password': user_data[3],
-        'user_role': user_data[4]
-        })), 200
 
 @app.route('/user/delete/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
-    poke_user.delete_user(user_id)
+    session = Session()
+    session.query(User).filter_by(user_id=user_id).delete()
+    session.commit()
     return jsonify({"message": "User deleted successfully"}), 200
-
-@app.route('/user/edit/<int:user_id>', methods=['PUT'])
-def edit_user(user_id):
-    data = request.json
-    try:
-        poke_user.edit_user(user_id, **data)
-        return jsonify({"message": "User updated successfully"}), 200
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
 
 @app.route('/user/checkpassword', methods=['GET'])
 def check_user_password():
     user_name = request.args.get('user_name')
     user_password = request.args.get('user_password')
-    user_id = poke_user.check_password(user_name, user_password)
-
-    if user_id:
-        return jsonify(user_id), 200
-    else:
-        return jsonify(None), 200
-
-
-# Pockemon Rating logic
-@app.route('/rating/add', methods=['POST'])
-def add_rating():
-    data = request.json
-    pokemon_id = data.get('pokemon_id')
-    user_id = data.get('user_id')
-    rating = data.get('rating')
-
-    if not all([pokemon_id, user_id, rating]):
-        return jsonify({"error": "Missing data for pokemon_id, user_id, or rating"}), 400
-    pokemon_rating.add_rating(pokemon_id, user_id, rating)
-    return jsonify({"message": "Rating added successfully"}), 201
-
-@app.route('/rating/pokemon/<int:pokemon_id>', methods=['GET'])
-def get_ratings_by_pokemon(pokemon_id):
-    ratings = pokemon_rating.get_ratings_by_pokemon(pokemon_id)
-    return jsonify(ratings), 200
-
-@app.route('/rating/user/<int:user_id>', methods=['GET'])
-def get_ratings_by_user(user_id):
-    ratings = pokemon_rating.get_ratings_by_user(user_id)
-    return jsonify(ratings), 200
-
-
-# Pockemon Type logic
-@app.route('/pokemon_type/add', methods=['POST'])
-def add_pokemon_type():
-    data = request.json
-    type_title = data.get('type_title')
-
-    if not type_title:
-        return jsonify({'error': 'Type title is required'}), 400
-    pokemon_type.add_type(type_title)
-    return jsonify({'message': 'Pokemon type added successfully'}), 201
-
-@app.route('/pokemon_type/<int:type_id>', methods=['GET'])
-def get_pokemon_type(type_id):
-    type_data = pokemon_type.get_type(type_id)
-    if type_data:
-        return jsonify({'type_id': type_data[0], 'type_title': type_data[1]}), 200
-    else:
-        return jsonify({'message': 'Pokemon type not found'}), 404
-
-
-# User Role logic
-@app.route('/user_role/add', methods=['POST'])
-def add_role():
-    data = request.json
-    role_title = data.get('role_title')
-
-    if not role_title:
-        return jsonify({'error': 'Role title is required'}), 400
-    role.add_role(role_title)
-    return jsonify({'message': 'Role added successfully'}), 201
-
-@app.route('/user_role/<int:role_id>', methods=['GET'])
-def get_role(role_id):
-    role_data = role.get_role(role_id)
-    if role_data:
-        return jsonify({'role_id': role_data[0],'role_title': role_data[1]}), 200
-    else:
-        return jsonify({'error': 'Role not found'}), 404
-
-
-# Pockemon XP Group logic
-@app.route('/xp_group/add', methods=['POST'])
-def add_xp_group():
-    data = request.json
-    group_title = data.get('group_title')
-
-    if not group_title:
-        return jsonify({"error": "Missing group_title"}), 400
-    xp_group.add_group(group_title)
-    return jsonify({"success": True, "message": "XP Group added successfully"}), 201
-
-@app.route('/xp_group/<int:group_id>', methods=['GET'])
-def get_xp_group(group_id):
-    group = xp_group.get_group(group_id)
-    if group:
-        return jsonify({"group_id": group[0], "group_title": group[1]}), 200
-    else:
-        return jsonify({"message": "XP Group not found"}), 404
-
-
-# Pokemon logic
-@app.route('/pokemon/add', methods=['POST'])
-def add_pokemon():
-    data = request.json
-
-    if not all(
-        data['pokemon_title'],
-        data['pokemon_photo'],
-        data['pokemon_name'],
-        data['pokemon_number'],
-        data['pokemon_type'],
-        data['pokemon_height'],
-        data['pokemon_weight'],
-        data['pokemon_xp_group'],
-        data['pokemon_abilities'],
-        data['pokemon_breed_period'],
-        data['pokemon_sex_ratio'],
-        data['pokemon_total_amount'],
-        data['pokemon_shine'],
-        data['pokemon_rarity'],
-        data['pokemon_health'],
-        data['pokemon_attack'],
-        data['pokemon_defence'],
-        data['pokemon_speed'],
-        data['pokemon_special_attack'],
-        data['pokemon_special_defence'],
-        data['pokemon_summ']):
-        return jsonify({"error": "Missing data"}), 400
-        
-    pokemon.add_pokemon(
-        data['pokemon_title'],
-        data['pokemon_photo'],
-        data['pokemon_name'],
-        data['pokemon_number'],
-        data['pokemon_type'],
-        data['pokemon_height'],
-        data['pokemon_weight'],
-        data['pokemon_xp_group'],
-        data['pokemon_abilities'],
-        data['pokemon_breed_period'],
-        data['pokemon_sex_ratio'],
-        data['pokemon_total_amount'],
-        data['pokemon_shine'],
-        data['pokemon_rarity'],
-        data['pokemon_health'],
-        data['pokemon_attack'],
-        data['pokemon_defence'],
-        data['pokemon_speed'],
-        data['pokemon_special_attack'],
-        data['pokemon_special_defence'],
-        data['pokemon_summ'])
-    return jsonify({'message': 'Pokemon added successfully'}), 201
-
-@app.route('/pokemon/<int:pokemon_id>', methods=['GET'])
-def get_pokemon(pokemon_id):
-    pokemon_data = pokemon.get_pokemon(pokemon_id)
-    if pokemon_data:
-        return jsonify({
-            'pokemon_id': pokemon_data[0],
-            'pokemon_title': pokemon_data[1],
-            'pokemon_photo': pokemon_data[2],
-            'pokemon_name': pokemon_data[3],
-            'pokemon_number': pokemon_data[4],
-            'pokemon_type': pokemon_data[5],
-            'pokemon_height': pokemon_data[6],
-            'pokemon_weight': pokemon_data[7],
-            'pokemon_xp_group': pokemon_data[8],
-            'pokemon_abilities': pokemon_data[9],
-            'pokemon_breed_period': pokemon_data[10],
-            'pokemon_sex_ratio': pokemon_data[11],
-            'pokemon_total_amount': pokemon_data[12],
-            'pokemon_shine': pokemon_data[13],
-            'pokemon_rarity': pokemon_data[14],
-            'pokemon_health': pokemon_data[15],
-            'pokemon_attack': pokemon_data[16],
-            'pokemon_defence': pokemon_data[17],
-            'pokemon_speed': pokemon_data[18],
-            'pokemon_special_attack': pokemon_data[19],
-            'pokemon_special_defence': pokemon_data[20],
-            'pokemon_summ': pokemon_data[21]
-        }), 200
-    else:
-        return jsonify({'message': 'Pokemon not found'}), 404
-
-
-@app.route('/pokemon', methods=['GET'])
-def get_all_pokemons():
-    page = request.args.get('page', 1, type=int)
-    pageSize = request.args.get('pageSize', 10, type=int)
+    session = Session()
+    user = session.query(User).filter_by(user_name=user_name).first()
     
-    total_count = pokemon.get_total_pokemons_count()
-    totalPages = (total_count + pageSize - 1) // pageSize
-    pokemon_data = pokemon.get_all_pokemons(page, pageSize)
-
-    pokemons = []
-    for data in pokemon_data:
-        pokemons.append({
-            'pokemon_id': data[0],
-            'pokemon_title': data[1],
-            'pokemon_photo': data[2],
-            'pokemon_name': data[3],
-            'pokemon_number': data[4],
-            'pokemon_type': data[5],
-            'pokemon_height': data[6],
-            'pokemon_weight': data[7],
-            'pokemon_xp_group': data[8],
-            'pokemon_abilities': data[9],
-            'pokemon_breed_period': data[10],
-            'pokemon_sex_ratio': data[11],
-            'pokemon_total_amount': data[12],
-            'pokemon_shine': data[13],
-            'pokemon_rarity': data[14],
-            'pokemon_health': data[15],
-            'pokemon_attack': data[16],
-            'pokemon_defence': data[17],
-            'pokemon_speed': data[18],
-            'pokemon_special_attack': data[19],
-            'pokemon_special_defence': data[20],
-            'pokemon_summ': data[21]
-        })
-
-    response = {
-        'pokemons': pokemons,
-        'page': page,
-        'page_size': pageSize,
-        'total_pages': totalPages,
-        'total_pokemons': total_count
-    }
-
-    return jsonify(response), 200
-
+    if user and bcrypt.checkpw(user_password.encode('utf-8'), user.user_password.encode('utf-8')):
+        return jsonify(user.user_id), 200
+    else:
+        return jsonify({"error": "Invalid username or password"}), 401
 
 @app.route('/pokemon/of_day', methods=['GET'])
 def get_id_pokemon_of_day():
+    date_str = datetime.today().strftime('%Y-%m-%d')
 
-    pokemon_id = pokemon.get_id_pokemon_of_day(datetime.today().strftime('%Y-%m-%d'))
-
-    return jsonify(pokemon_id), 200
+    # Используем хэш-функцию для генерации уникального значения
+    hash_result = hashlib.sha256(date_str.encode())
+    # Преобразуем хэш в число
+    hash_number = int(hash_result.hexdigest(), base=16)
+    # Получаем уникальное число от 0 до 999, используя остаток от деления
+    unique_number = hash_number % 1200
+        
+    return jsonify(unique_number)
 
 @app.route('/pokemon/of_month', methods=['GET'])
 def get_id_pokemon_of_month():
-    datetime.today().strftime('%Y-%m-%d')
-    pokemon_id = pokemon.get_id_pokemon_of_day(datetime.today().strftime('%Y-%m'))
+    date_str = datetime.today().strftime('%Y-%m')
 
-    return jsonify(pokemon_id), 200
+    # Используем хэш-функцию для генерации уникального значения
+    hash_result = hashlib.sha256(date_str.encode())        
+    # Преобразуем хэш в число
+    hash_number = int(hash_result.hexdigest(), base=16)
+    # Получаем уникальное число от 0 до 999, используя остаток от деления
+    unique_number = hash_number % 1200
+        
+    return jsonify(unique_number)
 
 
+
+#User Activity
+@app.route('/user_activity/add', methods=['POST'])
+def add_user_activity():
+    data = request.json
+    session = Session()
+
+    user_id = data.get('user_id')
+    activity = data.get('activity')
+    timestamp = data.get('timestamp')
+    if not all([user_id, activity, timestamp]):
+        
+        return jsonify({'error': 'Missing data'}), 400
+
+    new_activity = UserActivity(
+        user_id=user_id,
+        activity=activity,
+        timestamp=timestamp
+    )
+    session.add(new_activity)
+    session.commit()
+    
+    return jsonify({'message': 'Activity added successfully'}), 201
+
+@app.route('/user_activity/<int:activity_id>', methods=['GET'])
+def get_user_activity(activity_id):
+    session = Session()
+    activity = session.query(UserActivity).filter_by(activity_id=activity_id).first()
+    
+    if activity:
+        activity_data = {
+            'activity_id': activity.activity_id,
+            'user_id': activity.user_id,
+            'activity': activity.activity,
+            'timestamp': activity.timestamp
+        }
+        return jsonify({'activity': activity_data}), 200
+    else:
+        return jsonify({'error': 'Activity not found'}), 404
+
+@app.route('/user_activity/user/<int:user_id>', methods=['GET'])
+def get_activities_by_user(user_id):
+    session = Session()
+    activities = session.query(UserActivity).filter_by(user_id=user_id).all()
+    answer = [{
+        'activity_id': activity.activity_id,
+        'user_id': activity.user_id,
+        'activity': activity.activity,
+        'timestamp': activity.timestamp
+    } for activity in activities]
+
+    return jsonify(answer), 200
 
 # Run app
 if __name__ == '__main__':
