@@ -133,4 +133,13 @@ public partial class SignUpPage : Window
                 }
             }
     }
+
+    private void ButtonOnClick_Back(object? sender, RoutedEventArgs e)
+    {
+        StaticData.PokemonId = 0;
+        StaticData.UserId = 2;
+        var newWindow = new MainWindow();
+        newWindow.Show();
+        this.Close();
+    }
 }

@@ -6,6 +6,9 @@
         x:Class="Pokemon.SignUpPage"
         Title="SignUpPage">
         <StackPanel Name="PokeTest">
+                
+                <Button Margin="10 10 10 40" Click="ButtonOnClick_Back">Назад</Button>
+                
                 <TextBlock>Прежде чем зарегестрироваться пройди тест какой ты покемон :)</TextBlock>
                 <TextBlock>Таковы правила.</TextBlock>
         
