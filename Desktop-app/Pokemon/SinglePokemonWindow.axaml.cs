@@ -1,8 +1,6 @@
 using System.Net.Http;
 using AsyncImageLoader;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using Pokemon.Models.ApiClients;
 
 namespace Pokemon;
@@ -13,15 +11,14 @@ public partial class SinglePokemonWindow : Window
     {
         InitializeComponent();
         InitializeAsync();
-
     }
 
     private async void InitializeAsync()
     {
         var client = new PokemonApiClient(new HttpClient());
         var pokemon = await client.GetPokemonAsync(StaticData.PokemonId);
-        
-        ImageLoader.SetSource(Image,pokemon.PokemonPhoto);
+
+        ImageLoader.SetSource(Image, pokemon.PokemonPhoto);
         PokemonName.Text = "Name: " + pokemon.PokemonName;
         PokemonHeight.Text = "Height: " + pokemon.PokemonHeight + " m";
         PokemonWeight.Text = "Weight: " + pokemon.PokemonWeight + " kg";

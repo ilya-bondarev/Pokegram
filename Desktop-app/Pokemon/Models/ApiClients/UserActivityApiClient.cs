@@ -8,7 +8,9 @@ namespace Pokemon.Models.ApiClients;
 
 public class UserActivityApiClient : ApiClientBase
 {
-    public UserActivityApiClient(HttpClient httpClient) : base(httpClient) { }
+    public UserActivityApiClient(HttpClient httpClient) : base(httpClient)
+    {
+    }
 
     public async Task AddUserActivityAsync(UserActivity userActivity)
     {

@@ -1,9 +1,7 @@
 using System.Net.Http;
 using AsyncImageLoader;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Pokemon.Models.ApiClients;
 
 namespace Pokemon;
@@ -24,6 +22,7 @@ public partial class ProfileWindow : Window
 
         UserActivityListBox.ItemsSource = activities;
     }
+
     private async void LoadUserData()
     {
         var userClient = new UserApiClient(new HttpClient());
@@ -32,7 +31,7 @@ public partial class ProfileWindow : Window
         var pokemonClient = new PokemonApiClient(new HttpClient());
         var pokemon = await pokemonClient.GetPokemonAsync(user.UserTotemPokemon);
 
-        ImageLoader.SetSource(PokemonImage,pokemon.PokemonPhoto);
+        ImageLoader.SetSource(PokemonImage, pokemon.PokemonPhoto);
         UserName.Text = user.UserName;
         UserPokemon.Text = "Ваш покемон: " + pokemon.PokemonName;
         StaticData.PokemonId = user.UserTotemPokemon;
@@ -49,6 +48,6 @@ public partial class ProfileWindow : Window
     {
         var window = new PokeWindow();
         window.Show();
-        this.Close();
+        Close();
     }
 }

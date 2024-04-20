@@ -1,9 +1,7 @@
 using System.Net.Http;
 using AsyncImageLoader;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Pokemon.Models.ApiClients;
 
 namespace Pokemon;
@@ -11,19 +9,20 @@ namespace Pokemon;
 public partial class PopupWindow : Window
 {
     private int pokemonId;
+
     public PopupWindow()
     {
         InitializeComponent();
         InitializeAsync();
     }
-    
+
     private async void InitializeAsync()
     {
         var client = new PokemonApiClient(new HttpClient());
         var pokemon = await client.GetPokemonAsync(StaticData.PokemonId);
 
         Status.Text = StaticData.PopUpStatus;
-        ImageLoader.SetSource(Image,pokemon.PokemonPhoto);
+        ImageLoader.SetSource(Image, pokemon.PokemonPhoto);
         Title.Text = pokemon.PokemonTitle;
         pokemonId = pokemon.PokemonId;
     }
@@ -33,6 +32,6 @@ public partial class PopupWindow : Window
         StaticData.PokemonId = pokemonId;
         var pokeWindow = new SinglePokemonWindow();
         pokeWindow.Show();
-        this.Close();
+        Close();
     }
 }

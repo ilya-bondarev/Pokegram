@@ -1,11 +1,9 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Pokemon.Models.ApiClients;
 
 namespace Pokemon;
@@ -14,6 +12,7 @@ public partial class PokeWindow : Window
 {
     private int _currentPage = 1;
     private int _totalPages = 1;
+
     public PokeWindow()
     {
         InitializeComponent();
@@ -22,8 +21,8 @@ public partial class PokeWindow : Window
 
         AdminBtn.IsVisible = false;
         ProfileBtn.IsVisible = false;
-
     }
+
     private async void MainWindow_Loaded(object sender, EventArgs e)
     {
         await LoadPokemonPage(_currentPage);
@@ -39,12 +38,10 @@ public partial class PokeWindow : Window
         {
             UserName.Text = user.UserName;
             ProfileBtn.IsVisible = true;
-            if (user.UserRole == 1)
-            {
-                AdminBtn.IsVisible = true;
-            }
+            if (user.UserRole == 1) AdminBtn.IsVisible = true;
         }
     }
+
     private async Task LoadPokemonPage(int page)
     {
         var client = new PokemonApiClient(new HttpClient());
@@ -54,7 +51,8 @@ public partial class PokeWindow : Window
         PokemonListBox.ItemsSource = pokemons;
         PageInfo.Text = $"Page {_currentPage} of {_totalPages}";
     }
-    private async void PreviousButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+
+    private async void PreviousButton_Click(object sender, RoutedEventArgs e)
     {
         if (_currentPage > 1)
         {
@@ -63,7 +61,7 @@ public partial class PokeWindow : Window
         }
     }
 
-    private async void NextButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void NextButton_Click(object sender, RoutedEventArgs e)
     {
         if (_currentPage < _totalPages)
         {
@@ -75,9 +73,9 @@ public partial class PokeWindow : Window
     private void PokemonListBox_OnDoubleTapped(object? sender, TappedEventArgs e)
     {
         if (sender is not StackPanel listBoxItem) return;
-        
+
         StaticData.PokemonId = (int)listBoxItem.Tag;
-        
+
         var pokeWindow = new SinglePokemonWindow();
         pokeWindow.Show();
     }
@@ -88,13 +86,13 @@ public partial class PokeWindow : Window
         StaticData.UserId = 2;
         var newWindow = new MainWindow();
         newWindow.Show();
-        this.Close();
+        Close();
     }
 
     private async void ButtonOnClick_Pokemon_Of_The_Day(object? sender, RoutedEventArgs e)
     {
         var client = new PokemonApiClient(new HttpClient());
-        
+
         StaticData.PokemonId = await client.GetPokemonOfTheDay();
         StaticData.PopUpStatus = "Покемон дня:";
         var newWindow = new PopupWindow();
@@ -104,7 +102,7 @@ public partial class PokeWindow : Window
     private async void ButtonOnClick_Pokemon_Of_The_Month(object? sender, RoutedEventArgs e)
     {
         var client = new PokemonApiClient(new HttpClient());
-        
+
         StaticData.PokemonId = await client.GetPokemonOfTheMonth();
         StaticData.PopUpStatus = "Покемон месяца:";
         var newWindow = new PopupWindow();
@@ -115,13 +113,13 @@ public partial class PokeWindow : Window
     {
         var newWindow = new ProfileWindow();
         newWindow.Show();
-        this.Close();
+        Close();
     }
 
     private void ButtonOnClick_Admin(object? sender, RoutedEventArgs e)
     {
         var newWindow = new AdminPanelWindow();
         newWindow.Show();
-        this.Close();
+        Close();
     }
 }

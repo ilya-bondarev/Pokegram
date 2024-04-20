@@ -18,8 +18,8 @@ public class UserApiClient : ApiClientBase
     {
         var responseString = await HttpClient.GetStringAsync($"{BaseUrl}/user");
         var users = JsonConvert.DeserializeObject<List<User>>(responseString);
-        
-        
+
+
         return users;
     }
 
@@ -27,8 +27,8 @@ public class UserApiClient : ApiClientBase
     {
         var responseString = await HttpClient.GetStringAsync($"{BaseUrl}/user/{userId}");
         var user = JsonConvert.DeserializeObject<User>(responseString);
-        
-        
+
+
         return user;
     }
 
@@ -38,7 +38,7 @@ public class UserApiClient : ApiClientBase
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await HttpClient.PostAsync($"{BaseUrl}/user/add", content);
-        if (!response.IsSuccessStatusCode) { throw new Exception("User already exist or missing data");}
+        if (!response.IsSuccessStatusCode) throw new Exception("User already exist or missing data");
     }
 
     public async Task DeleteUserAsync(int userId)
@@ -48,10 +48,9 @@ public class UserApiClient : ApiClientBase
 
     public async Task<int?> CheckUserPasswordAsync(string userName, string password)
     {
-            var responseString = await HttpClient.GetStringAsync(
-                $"{BaseUrl}/user/checkpassword?user_name={userName}&user_password={password}");
-            var userId = JsonConvert.DeserializeObject<int?>(responseString);
-            return userId;
-        
+        var responseString = await HttpClient.GetStringAsync(
+            $"{BaseUrl}/user/checkpassword?user_name={userName}&user_password={password}");
+        var userId = JsonConvert.DeserializeObject<int?>(responseString);
+        return userId;
     }
 }

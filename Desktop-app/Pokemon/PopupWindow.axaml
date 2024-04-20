@@ -8,9 +8,9 @@
         x:Class="Pokemon.PopupWindow"
         Title="PopupWindow">
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <TextBlock Name="Status" FontSize="30" FontWeight="Bold"/>
-        <Image Name="Image" Width="250"/>
-        <TextBlock Name="Title"  FontSize="26"/>
+        <TextBlock Name="Status" FontSize="30" FontWeight="Bold" />
+        <Image Name="Image" Width="250" />
+        <TextBlock Name="Title" FontSize="26" />
         <Button Click="Button_OnClick">Подробнее..</Button>
     </StackPanel>
 </Window>

@@ -11,11 +11,13 @@ namespace Pokemon;
 public partial class AdminPanelWindow : Window
 {
     private int userId;
+
     public AdminPanelWindow()
     {
         InitializeComponent();
         Upload();
     }
+
     private async void Upload()
     {
         var clientActivity = new UserActivityApiClient(new HttpClient());
@@ -27,12 +29,14 @@ public partial class AdminPanelWindow : Window
         UserListBox.ItemsSource = users;
         UserActivityListBox.ItemsSource = activities;
     }
+
     private void PokemonBtn(object? sender, RoutedEventArgs routedEventArgs)
     {
         var window = new PokeWindow();
         window.Show();
-        this.Close();
+        Close();
     }
+
     private void UserPokemonBtn_OnClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;
@@ -42,17 +46,18 @@ public partial class AdminPanelWindow : Window
         var window = new SinglePokemonWindow();
         window.Show();
     }
+
     private async void UserDeleteBtn_OnClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;
         if ((int)button.Tag == 8 || (int)button.Tag == 2) return; //Protect from deleting Admin and Guest users
         var userId = (int)button.Tag;
 
-        
+
         var client = new UserApiClient(new HttpClient());
         await client.DeleteUserAsync(userId);
         Upload();
-        
+
         var httpClient = new HttpClient();
         var userActivityApiClient = new UserActivityApiClient(httpClient);
         var newActivity = new UserActivity
@@ -63,6 +68,7 @@ public partial class AdminPanelWindow : Window
         };
         await userActivityApiClient.AddUserActivityAsync(newActivity);
     }
+
     private void InputElement_OnDoubleTapped(object? sender, TappedEventArgs e)
     {
         if (sender is not StackPanel userList) return;

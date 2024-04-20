@@ -5,14 +5,14 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Pokemon.MainWindow"
         Title="Pokemon">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBox Name="TextBoxLogin" Watermark="Login" Width="220" Margin="0 0 0 10"/>
-                <TextBox Name="TextBoxPassword" Watermark="Password" Width="220" Margin="0 0 0 10" PasswordChar="*"/>
-                <TextBlock Name="TextBlockAlert" Foreground="Brown" FontSize="10"/>
-                <Button Click="Login_OnClick" Width="220" Margin="0 0  0 20">Log in</Button>
-                <StackPanel Orientation="Horizontal" Width="220">
-                        <Button Click="SignUp_OnClick" Width="100" Margin="0 0  20 0">Sign up</Button>
-                        <Button Click="Guest_OnClick" Width="100">Guest</Button>
-                </StackPanel>
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBox Name="TextBoxLogin" Watermark="Login" Width="220" Margin="0 0 0 10" />
+        <TextBox Name="TextBoxPassword" Watermark="Password" Width="220" Margin="0 0 0 10" PasswordChar="*" />
+        <TextBlock Name="TextBlockAlert" Foreground="Brown" FontSize="10" />
+        <Button Click="Login_OnClick" Width="220" Margin="0 0  0 20">Log in</Button>
+        <StackPanel Orientation="Horizontal" Width="220">
+            <Button Click="SignUp_OnClick" Width="100" Margin="0 0  20 0">Sign up</Button>
+            <Button Click="Guest_OnClick" Width="100">Guest</Button>
         </StackPanel>
+    </StackPanel>
 </Window>

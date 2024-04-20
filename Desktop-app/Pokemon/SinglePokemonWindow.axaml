@@ -7,27 +7,27 @@
         Width="400" Height="600"
         x:Class="Pokemon.SinglePokemonWindow"
         Title="SinglePokemonWindow">
-        <DockPanel LastChildFill="True">
-                <StackPanel DockPanel.Dock="Top"></StackPanel>
-                <StackPanel>
-                        <Image Name="Image" Width="200"/>
-                        <TextBlock Name="PokemonName" />
-                        <TextBlock Name="PokemonHeight" />
-                        <TextBlock Name="PokemonWeight" />
-                        <TextBlock Name="PokemonAbilities" />
-                        <TextBlock Name="PokemonBreedPeriod" />
-                        <TextBlock Name="PokemonSexRatio" />
-                        <TextBlock Name="PokemonTotalAmount" />
-                        <TextBlock Name="PokemonShine" />
-                        <TextBlock Name="PokemonRarity" />
-                        <TextBlock Name="PokemonHealth" />
-                        <TextBlock Name="PokemonAttack" />
-                        <TextBlock Name="PokemonDefence" />
-                        <TextBlock Name="PokemonSpeed" />
-                        <TextBlock Name="PokemonSpecialAttack" />
-                        <TextBlock Name="PokemonSpecialDefence" />
-                        <TextBlock Name="PokemonSumm"/>
+    <DockPanel LastChildFill="True">
+        <StackPanel DockPanel.Dock="Top" />
+        <StackPanel>
+            <Image Name="Image" Width="200" />
+            <TextBlock Name="PokemonName" />
+            <TextBlock Name="PokemonHeight" />
+            <TextBlock Name="PokemonWeight" />
+            <TextBlock Name="PokemonAbilities" />
+            <TextBlock Name="PokemonBreedPeriod" />
+            <TextBlock Name="PokemonSexRatio" />
+            <TextBlock Name="PokemonTotalAmount" />
+            <TextBlock Name="PokemonShine" />
+            <TextBlock Name="PokemonRarity" />
+            <TextBlock Name="PokemonHealth" />
+            <TextBlock Name="PokemonAttack" />
+            <TextBlock Name="PokemonDefence" />
+            <TextBlock Name="PokemonSpeed" />
+            <TextBlock Name="PokemonSpecialAttack" />
+            <TextBlock Name="PokemonSpecialDefence" />
+            <TextBlock Name="PokemonSumm" />
 
-                </StackPanel>
-        </DockPanel>
+        </StackPanel>
+    </DockPanel>
 </Window>

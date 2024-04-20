@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using MessageBox.Avalonia;
 using Pokemon.Models.ApiClients;
 using Pokemon.Models.Entities;
 
@@ -18,10 +14,10 @@ public partial class SignUpPage : Window
     {
         InitializeComponent();
     }
-    
-    class PokemonNameSelector
+
+    private class PokemonNameSelector
     {
-        private static readonly Dictionary<(int, int, int), int> NameLookup = new Dictionary<(int, int, int), int>
+        private static readonly Dictionary<(int, int, int), int> NameLookup = new()
         {
             { (1, 1, 1), 255 },
             { (1, 1, 2), 3 },
@@ -54,83 +50,81 @@ public partial class SignUpPage : Window
 
         public static int GetId(int a, int b, int c)
         {
-            if (NameLookup.TryGetValue((a, b, c), out int id))
-            {
-                return id;
-            }
+            if (NameLookup.TryGetValue((a, b, c), out var id)) return id;
             return 255;
         }
     }
+
     private async void SignUp_Click(object? sender, RoutedEventArgs e)
     {
-        if (LoginTextBox.Text.Length > 20 || !System.Text.RegularExpressions.Regex.IsMatch(LoginTextBox.Text, @"^[a-zA-Z0-9-_а-яА-Я]+$"))
+        if (LoginTextBox.Text.Length > 20 ||
+            !System.Text.RegularExpressions.Regex.IsMatch(LoginTextBox.Text, @"^[a-zA-Z0-9-_а-яА-Я]+$"))
         {
             Attention.Text = "Логин должен быть не более 20 символов и содержать только буквы, цифры и символы -_";
-            return; 
+            return;
         }
+
         int a = 0, b = 0, c = 0;
-            // Вопрос 1
-            if (AFirst.IsChecked == true) a = 1;
-            else if (ASecond.IsChecked == true) a = 2;
-            else if (AThird.IsChecked == true) a = 3;
+        // Вопрос 1
+        if (AFirst.IsChecked == true) a = 1;
+        else if (ASecond.IsChecked == true) a = 2;
+        else if (AThird.IsChecked == true) a = 3;
 
-            // Вопрос 2
-            if (BFirst.IsChecked == true) b = 1;
-            else if (BSecond.IsChecked == true) b = 2;
-            else if (BThird.IsChecked == true) b = 3;
+        // Вопрос 2
+        if (BFirst.IsChecked == true) b = 1;
+        else if (BSecond.IsChecked == true) b = 2;
+        else if (BThird.IsChecked == true) b = 3;
 
-            // Вопрос 3
-            if (CFirst.IsChecked == true) c = 1;
-            else if (CSecond.IsChecked == true) c = 2;
-            else if (CThird.IsChecked == true) c = 3;
+        // Вопрос 3
+        if (CFirst.IsChecked == true) c = 1;
+        else if (CSecond.IsChecked == true) c = 2;
+        else if (CThird.IsChecked == true) c = 3;
 
-            if (a == 0 || b == 0 || c == 0 
-                || string.IsNullOrWhiteSpace(LoginTextBox.Text) 
-                || string.IsNullOrWhiteSpace(PasswordTextBox.Text))
-                Attention.Text = "Необходимо заполнить все поля и пройти тест";
-            else
+        if (a == 0 || b == 0 || c == 0
+            || string.IsNullOrWhiteSpace(LoginTextBox.Text)
+            || string.IsNullOrWhiteSpace(PasswordTextBox.Text))
+            Attention.Text = "Необходимо заполнить все поля и пройти тест";
+        else
+            try
             {
-                try
-                {
-                    var httpClient = new HttpClient();
-                    var userApiClient = new UserApiClient(httpClient);
-                    var userActivityApiClient = new UserActivityApiClient(httpClient);
-                    
-                    
-                    var newUser = new User
-                    {
-                        UserName = LoginTextBox.Text,
-                        UserPassword = PasswordTextBox.Text,
-                        UserTotemPokemon = PokemonNameSelector.GetId(a,b,c),
-                        UserRole = 2 // Обычный пользователь
-                    };
-                    await userApiClient.AddUserAsync(newUser);
-                    
-                    
-                    var id = await userApiClient.CheckUserPasswordAsync(LoginTextBox.Text, PasswordTextBox.Text);
-                    var newActivity = new UserActivity
-                    {
-                        UserId = (int)id,
-                        Activity = "User #" + id + " just registred",
-                        Timestamp = DateTime.Now
-                    };
-                    await userActivityApiClient.AddUserActivityAsync(newActivity);
+                var httpClient = new HttpClient();
+                var userApiClient = new UserApiClient(httpClient);
+                var userActivityApiClient = new UserActivityApiClient(httpClient);
 
 
-                    StaticData.PokemonId = PokemonNameSelector.GetId(a, b, c);
-                    StaticData.UserId = id;
-                    StaticData.PopUpStatus = "Добро пожаловать! Ваш покемон:";
-                    var newWindow = new PokeWindow();
-                    newWindow.Show();
-                    
-                    var popupWindow = new PopupWindow();
-                    popupWindow.Show();
-                    this.Close();
-                }
-                catch (Exception ex)
+                var newUser = new User
                 {
-                    Attention.Text = "Ошибка при регистрации. Попробуйте еще раз.";
-                }
+                    UserName = LoginTextBox.Text,
+                    UserPassword = PasswordTextBox.Text,
+                    UserTotemPokemon = PokemonNameSelector.GetId(a, b, c),
+                    UserRole = 2 // Обычный пользователь
+                };
+                await userApiClient.AddUserAsync(newUser);
+
+
+                var id = await userApiClient.CheckUserPasswordAsync(LoginTextBox.Text, PasswordTextBox.Text);
+                var newActivity = new UserActivity
+                {
+                    UserId = (int)id,
+                    Activity = "User #" + id + " just registred",
+                    Timestamp = DateTime.Now
+                };
+                await userActivityApiClient.AddUserActivityAsync(newActivity);
+
+
+                StaticData.PokemonId = PokemonNameSelector.GetId(a, b, c);
+                StaticData.UserId = id;
+                StaticData.PopUpStatus = "Добро пожаловать! Ваш покемон:";
+                var newWindow = new PokeWindow();
+                newWindow.Show();
+
+                var popupWindow = new PopupWindow();
+                popupWindow.Show();
+                Close();
+            }
+            catch (Exception ex)
+            {
+                Attention.Text = "Ошибка при регистрации. Попробуйте еще раз.";
             }
     }
 
@@ -140,6 +134,6 @@ public partial class SignUpPage : Window
         StaticData.UserId = 2;
         var newWindow = new MainWindow();
         newWindow.Show();
-        this.Close();
+        Close();
     }
 }
