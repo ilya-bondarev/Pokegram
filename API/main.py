@@ -150,7 +150,7 @@ def get_all_users():
 @app.route('/user/add', methods=['POST'])
 def add_user():
     data = request.json
-    session = Session()
+    
 
     if not all([data.get('user_name'), data.get('user_totem_pokemon'), data.get('user_password'), data.get('user_role')]):
         return jsonify({"error": "Missing data"}), 400
@@ -172,7 +172,9 @@ def add_user():
 
 @app.route('/user/delete/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
-    session = Session()
+    
+
+    session.query(UserActivity).filter_by(user_id=user_id).delete()
     session.query(User).filter_by(user_id=user_id).delete()
     session.commit()
     return jsonify({"message": "User deleted successfully"}), 200
@@ -181,13 +183,13 @@ def delete_user(user_id):
 def check_user_password():
     user_name = request.args.get('user_name')
     user_password = request.args.get('user_password')
-    session = Session()
+    
     user = session.query(User).filter_by(user_name=user_name).first()
     
     if user and bcrypt.checkpw(user_password.encode('utf-8'), user.user_password.encode('utf-8')):
         return jsonify(user.user_id), 200
     else:
-        return jsonify({"error": "Invalid username or password"}), 401
+        return jsonify(None), 200
 
 @app.route('/pokemon/of_day', methods=['GET'])
 def get_id_pokemon_of_day():
@@ -221,7 +223,7 @@ def get_id_pokemon_of_month():
 @app.route('/user_activity/add', methods=['POST'])
 def add_user_activity():
     data = request.json
-    session = Session()
+    
 
     user_id = data.get('user_id')
     activity = data.get('activity')
@@ -242,7 +244,7 @@ def add_user_activity():
 
 @app.route('/user_activity/<int:activity_id>', methods=['GET'])
 def get_user_activity(activity_id):
-    session = Session()
+    
     activity = session.query(UserActivity).filter_by(activity_id=activity_id).first()
     
     if activity:
@@ -258,7 +260,7 @@ def get_user_activity(activity_id):
 
 @app.route('/user_activity/user/<int:user_id>', methods=['GET'])
 def get_activities_by_user(user_id):
-    session = Session()
+    
     activities = session.query(UserActivity).filter_by(user_id=user_id).all()
     answer = [{
         'activity_id': activity.activity_id,
