@@ -9,7 +9,6 @@ class Ability(Base):
     ability_id = Column(Integer, primary_key=True)
     ability_name = Column(String, nullable=False)
 
-    # Relationship (Assuming many-to-many with Pokémon)
     pokemons = relationship("Pokemon", secondary="pokemon_abilities", back_populates="abilities")
 
 class PokemonAbility(Base):
