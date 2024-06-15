@@ -52,3 +52,10 @@ Pokegram is an API and desktop application designed to provide a platform for in
 3. Commit your changes (`git commit -am 'Add new feature'`)
 4. Push to the branch (`git push origin feature-branch`)
 5. Create a new Pull Request
+
+## Contacts
+
+If you have any questions, please contact us through the following channels:
+- **Telegram:** [@bondarev_i](https://t.me/bondarev_i)
+- **Email:** [bondarev.ilya.dev@gmail.com](mailto:bondarev.ilya.dev@gmail.com)
+- **LinkedIn:** [Bondarev Ilya](https://www.linkedin.com/in/bondarev-i/)
