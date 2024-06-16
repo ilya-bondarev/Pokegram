@@ -1,6 +1,6 @@
 # Pokegram
 
-Pokegram is an API and desktop application designed to provide a platform for interacting with Pokémon-themed content.
+Pokegram is an API and desktop application designed to provide a platform for interacting with Pokémon-themed content. Created as a learning project.
 
 ## Tech Stack
 
@@ -55,7 +55,7 @@ Pokegram is an API and desktop application designed to provide a platform for in
 
 ## Contacts
 
-If you have any questions, please contact us through the following channels:
+If you have any questions, feel free to contact me through the following channels:
 - **Telegram:** [@bondarev_i](https://t.me/bondarev_i)
 - **Email:** [bondarev.ilya.dev@gmail.com](mailto:bondarev.ilya.dev@gmail.com)
 - **LinkedIn:** [Bondarev Ilya](https://www.linkedin.com/in/bondarev-i/)
